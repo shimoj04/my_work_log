@@ -7,7 +7,7 @@ on:
       - 'infra/github_action_tofu/*'
   pull_request:
     types:
-      - opened
+      - closed
     branches:
       - main
 
