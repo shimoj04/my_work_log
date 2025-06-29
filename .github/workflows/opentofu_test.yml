@@ -5,11 +5,20 @@ on:
   push:
     paths:
       - 'infra/github_action_tofu/*'
+  pull_request:
+    types:
+      - opened
+    branches:
+      - main
 
 jobs:
   opentofu-plan:
     if: github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra/github_action_tofu
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,6 +28,7 @@ jobs:
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_wrapper: opentofu
+
       # 環境変数として credentials を渡す
       - name: Export SakuraCloud credentials
         run: |
@@ -26,24 +36,64 @@ jobs:
           echo "SAKURACLOUD_ACCESS_TOKEN_SECRET=${{ secrets.SAKURACLOUD_ACCESS_TOKEN_SECRET }}" >> $GITHUB_ENV
           echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "TF_VAR_region=${{ secrets.OBJECT_STORAGE_REGION }}" >> $GITHUB_ENV
 
       # Terraform 初期化 (backend に Sakura Cloud Object Storage)
-      - name: opentofu Init
+      - name: Terraform Init
         run: |
-          opentofu init \
+          terraform init \
             -backend-config="bucket=${{ secrets.OBJECT_STORAGE_NAME }}" \
             -backend-config="endpoint=${{ secrets.SAKURACLOUD_API_ENDPOINT }}" \
             -backend-config="access_key=${{ env.AWS_ACCESS_KEY_ID }}" \
             -backend-config="secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}" \
-            -backend-config="region=${{ secrets.SAKURACLOUD_REGION }}" \
+            -backend-config="region=${{ secrets.OBJECT_STORAGE_REGION }}" \
             -backend-config="key=github/test/terraform.tfstate"
 
-      - name: opentofu Plan
-        run: opentofu plan -input=false -lock=true \
-          -out=plan.out
+      - name: Terraform Plan
+        run: |
+          terraform plan \
+            -input=false \
+            -lock=true \
+            -out=plan.out
 
-      - name: Upload Planfile
-        uses: actions/upload-artifact@v3
+  opentofu-apply:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra/github_action_tofu
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run a sample command
+        run: echo "OpenTofu Test CI/CD is running!"
+      # OpenTofu セットアップ
+      - uses: hashicorp/setup-terraform@v2
         with:
-          name: tfplan-${{ github.ref_name }}
-          path: plan.out
+          terraform_wrapper: opentofu
+
+      # 環境変数として credentials を渡す
+      - name: Export SakuraCloud credentials
+        run: |
+          echo "SAKURACLOUD_ACCESS_TOKEN=${{ secrets.SAKURACLOUD_ACCESS_TOKEN }}" >> $GITHUB_ENV
+          echo "SAKURACLOUD_ACCESS_TOKEN_SECRET=${{ secrets.SAKURACLOUD_ACCESS_TOKEN_SECRET }}" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "TF_VAR_region=${{ secrets.OBJECT_STORAGE_REGION }}" >> $GITHUB_ENV
+
+      # Terraform 初期化 (backend に Sakura Cloud Object Storage)
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.OBJECT_STORAGE_NAME }}" \
+            -backend-config="endpoint=${{ secrets.SAKURACLOUD_API_ENDPOINT }}" \
+            -backend-config="access_key=${{ env.AWS_ACCESS_KEY_ID }}" \
+            -backend-config="secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}" \
+            -backend-config="region=${{ secrets.OBJECT_STORAGE_REGION }}" \
+            -backend-config="key=github/test/terraform.tfstate"
+
+      - name: Terraform Apply
+        run: |
+          terraform apply -auto-approve -input=false
+ 

@@ -3,6 +3,14 @@
 ############################################################
 terraform {
   backend "s3" {
+    bucket = var.object_storage_name
+    endpoints {
+      s3 = var.sakuracloud_api_endpoint
+    }
+    # ── 認証情報
+    access_key = var.aws_access_key_id
+    secret_key = var.aws_secret_access_key
+
     skip_credentials_validation = true
     skip_region_validation      = true
     force_path_style            = true
@@ -39,9 +47,7 @@ resource "sakuracloud_disk" "disk_from_tofu_test" {
 ############################################################
 # 3. 出力
 ############################################################
-
 output "disk_id" {
   value = sakuracloud_disk.disk_from_tofu_test.id
   description = "作成したディスクの ID（UUID）"
 }
-
