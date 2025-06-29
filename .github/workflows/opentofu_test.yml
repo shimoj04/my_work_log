@@ -3,8 +3,8 @@ name: OpenTofu Test CI/CD
 run-name: ${{ github.actor }} is testing OpenTofu CI/CD🚀
 on:
   push:
-    branches-ignore:
-      - main
+    paths:
+      - 'infra/github_action_tofu/*'
 
 jobs:
   opentofu-plan:
