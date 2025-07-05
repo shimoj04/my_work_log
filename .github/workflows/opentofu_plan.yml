@@ -1,6 +1,6 @@
 name: OpenTofu Test CI/CD
 
-run-name: ${{ github.actor }} is testing OpenTofu CI/CD🚀
+run-name: ${{ github.actor }} is testing OpenTofu Plan CI/CD🚀
 on:
   pull_request:
     branches:
@@ -53,3 +53,7 @@ jobs:
             -input=false \
             -lock=true \
             -out=plan.out
+
+      - name: Show Terraform Plan
+        if: always()
+        run: terraform show plan.out

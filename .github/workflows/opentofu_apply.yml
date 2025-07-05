@@ -1,6 +1,6 @@
 name: OpenTofu Apply CI/CD
 
-run-name: ${{ github.actor }} is testing OpenTofu CI/CD🚀
+run-name: ${{ github.actor }} is testing OpenTofu Apply CI/CD🚀
 on:
   push:
     branches:

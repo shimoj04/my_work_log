@@ -45,11 +45,17 @@ resource "sakuracloud_disk" "disk_from_tofu_test" {
 }
 
 
+resource "sakuracloud_switch" "my_switch" {
+  name = "my-open-tofu-switch"
+  description = "Created via OpenTofu"
+  tags        = ["202507", "tofu"]
+}
+
 
 ############################################################
 # 3. 出力
 ############################################################
 output "disk_name" {
-  value = sakuracloud_disk.disk_from_tofu.name
+  value = sakuracloud_disk.disk_from_tofu_test.name
   description = "作成したディスク名"
 }
