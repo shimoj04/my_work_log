@@ -31,6 +31,7 @@ provider "sakuracloud" {
 
 ############################################################
 # 2. diskのリソース作成
+  ## test
 ############################################################
 data "sakuracloud_archive" "rockylinux" {
   os_type = "rockylinux"
