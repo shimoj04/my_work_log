@@ -44,6 +44,12 @@ resource "sakuracloud_disk" "disk_from_tofu_test" {
   source_archive_id = data.sakuracloud_archive.rockylinux.id
 }
 
+resource "sakuracloud_switch" "my_switch" {
+  name = "my-open-tofu-switch"
+  description = "Created via OpenTofu"
+  tags        = ["202507", "tofu"]
+}
+
 ############################################################
 # 3. 出力
 ############################################################
