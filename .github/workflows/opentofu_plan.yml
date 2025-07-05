@@ -53,3 +53,7 @@ jobs:
             -input=false \
             -lock=true \
             -out=plan.out
+
+      - name: Show Terraform Plan
+        if: always()
+        run: terraform show plan.out
