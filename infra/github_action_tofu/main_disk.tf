@@ -31,7 +31,6 @@ provider "sakuracloud" {
 
 ############################################################
 # 2. diskのリソース作成
-  ## test
 ############################################################
 data "sakuracloud_archive" "rockylinux" {
   os_type = "rockylinux"
@@ -44,6 +43,7 @@ resource "sakuracloud_disk" "disk_from_tofu_test" {
   size              = 20
   source_archive_id = data.sakuracloud_archive.rockylinux.id
 }
+
 
 
 ############################################################
