@@ -2,10 +2,11 @@ name: OpenTofu Apply CI/CD
 
 run-name: ${{ github.actor }} is testing OpenTofu CI/CD🚀
 on:
-  branches:
-    - main
-  paths:
-    - 'infra/github_action_tofu/*'
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/github_action_tofu/*'
 
 jobs:
   opentofu-apply:
