@@ -44,6 +44,7 @@ resource "sakuracloud_disk" "disk_from_tofu_test" {
   source_archive_id = data.sakuracloud_archive.rockylinux.id
 }
 
+
 ############################################################
 # 3. 出力
 ############################################################
