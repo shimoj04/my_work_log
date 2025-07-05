@@ -36,13 +36,6 @@ data "sakuracloud_archive" "rockylinux" {
   os_type = "rockylinux"
 }
 
-resource "sakuracloud_disk" "disk_from_tofu_test" {
-  name              = "disk_from_tofu"
-  plan              = "ssd"
-  connector         = "virtio"
-  size              = 20
-  source_archive_id = data.sakuracloud_archive.rockylinux.id
-}
 
 
 resource "sakuracloud_switch" "my_switch" {
@@ -55,7 +48,3 @@ resource "sakuracloud_switch" "my_switch" {
 ############################################################
 # 3. 出力
 ############################################################
-output "disk_name" {
-  value = sakuracloud_disk.disk_from_tofu_test.name
-  description = "作成したディスク名"
-}
