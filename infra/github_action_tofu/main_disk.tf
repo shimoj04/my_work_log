@@ -56,6 +56,6 @@ resource "sakuracloud_switch" "my_switch" {
 # 3. 出力
 ############################################################
 output "disk_name" {
-  value = sakuracloud_disk.disk_from_tofu.name
+  value = sakuracloud_disk.disk_from_tofu_test.name
   description = "作成したディスク名"
 }
