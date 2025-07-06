@@ -24,7 +24,7 @@ jobs:
       - name: Setup OpenTofu CLI
         uses: opentofu/setup-opentofu@v1
         with:
-          tofu_version: 'latest'  # 必要に応じて固定バージョンを指定
+          tofu_version: 'latest'
       # tofu コマンドの動作確認
       - name: Verify tofu
         run: |

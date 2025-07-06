@@ -20,10 +20,15 @@ jobs:
         uses: actions/checkout@v4
       - name: Run a sample command
         run: echo "OpenTofu Apply CI/CD is running!"
-      # OpenTofu セットアップ
-      - uses: hashicorp/setup-terraform@v2
+      # OpenTofu CLI をインストール
+      - name: Setup OpenTofu CLI
+        uses: opentofu/setup-opentofu@v1
         with:
-          terraform_wrapper: opentofu
+          tofu_version: 'latest'
+      # tofu コマンドの動作確認
+      - name: Verify tofu
+        run: |
+          tofu version
 
       # 環境変数として credentials を渡す
       - name: Export SakuraCloud credentials
@@ -42,8 +47,8 @@ jobs:
           tofu init \
             -backend-config="bucket=${{ secrets.OBJECT_STORAGE_NAME }}" \
             -backend-config="endpoint=${{ secrets.SAKURACLOUD_API_ENDPOINT }}" \
-            -backend-config="access_key=${{ env.AWS_ACCESS_KEY_ID }}" \
-            -backend-config="secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}" \
+            -backend-config="access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            -backend-config="secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             -backend-config="region=${{ secrets.OBJECT_STORAGE_REGION }}" \
             -backend-config="key=github/test_tofu/terraform.tfstate"
 
