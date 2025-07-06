@@ -41,8 +41,8 @@ jobs:
           echo AWS_REQUEST_CHECKSUM_CALCULATION=WHEN_REQUIRED >> $GITHUB_ENV
           echo AWS_RESPONSE_CHECKSUM_VALIDATION=WHEN_REQUIRED >> $GITHUB_ENV
 
-      # Terraform 初期化 (backend に Sakura Cloud Object Storage)
-      - name: Terraform Init
+      # Opentofu 初期化 (backend に Sakura Cloud Object Storage)
+      - name: Opentofu Init
         run: |
           tofu init \
             -backend-config="bucket=${{ secrets.OBJECT_STORAGE_NAME }}" \
@@ -52,7 +52,7 @@ jobs:
             -backend-config="region=${{ secrets.OBJECT_STORAGE_REGION }}" \
             -backend-config="key=github/test_tofu/terraform.tfstate"
 
-      - name: Terraform Apply
+      - name: Opentofu Apply
         run: |
           tofu apply -auto-approve -input=false
  
