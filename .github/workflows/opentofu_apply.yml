@@ -45,7 +45,7 @@ jobs:
             -backend-config="access_key=${{ env.AWS_ACCESS_KEY_ID }}" \
             -backend-config="secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}" \
             -backend-config="region=${{ secrets.OBJECT_STORAGE_REGION }}" \
-            -backend-config="key=github/test_tofu/terraform.tfstate"
+            -backend-config="key=github/test/terraform.tfstate"
 
       - name: Terraform Apply
         run: |
