@@ -1,1 +1,7 @@
 text/*
+
+sakura_cloud/make_server/.terraform.lock.hcl
+sakura_cloud/make_server/.terraform/
+sakura_cloud/make_user/*
+sakura_cloud/make_server/terraform.tfstate
+sakura_cloud/make_server/terraform.tfstate.backup
