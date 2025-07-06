@@ -20,40 +20,41 @@ jobs:
         uses: actions/checkout@v4
       - name: Run a sample command
         run: echo "OpenTofu Plan CI/CD is running!"
-      # OpenTofu セットアップ
-      - uses: hashicorp/setup-terraform@v2
+      # OpenTofu CLI をインストール
+      - name: Setup OpenTofu CLI
+        uses: opentofu/setup-opentofu@v1
         with:
-          terraform_wrapper: opentofu
+          tofu_version: 'latest'
+      # tofu コマンドの動作確認
+      - name: Verify tofu
+        run: |
+          tofu version
 
       # 環境変数として credentials を渡す
       - name: Export SakuraCloud credentials
         run: |
           echo "SAKURACLOUD_ACCESS_TOKEN=${{ secrets.SAKURACLOUD_ACCESS_TOKEN }}" >> $GITHUB_ENV
           echo "SAKURACLOUD_ACCESS_TOKEN_SECRET=${{ secrets.SAKURACLOUD_ACCESS_TOKEN_SECRET }}" >> $GITHUB_ENV
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "TF_VAR_aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "TF_VAR_aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
           echo "TF_VAR_region=${{ secrets.OBJECT_STORAGE_REGION }}" >> $GITHUB_ENV
           echo AWS_REQUEST_CHECKSUM_CALCULATION=WHEN_REQUIRED >> $GITHUB_ENV
           echo AWS_RESPONSE_CHECKSUM_VALIDATION=WHEN_REQUIRED >> $GITHUB_ENV
 
-      # Terraform 初期化 (backend に Sakura Cloud Object Storage)
-      - name: Terraform Init
+      # Opentofu 初期化 (backend に Sakura Cloud Object Storage)
+      - name: Opentofu Init
         run: |
-          terraform init \
+          tofu init \
             -backend-config="bucket=${{ secrets.OBJECT_STORAGE_NAME }}" \
             -backend-config="endpoint=${{ secrets.SAKURACLOUD_API_ENDPOINT }}" \
-            -backend-config="access_key=${{ env.AWS_ACCESS_KEY_ID }}" \
-            -backend-config="secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}" \
+            -backend-config="access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            -backend-config="secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
             -backend-config="region=${{ secrets.OBJECT_STORAGE_REGION }}" \
             -backend-config="key=github/test_tofu/terraform.tfstate"
 
-      - name: Terraform Plan
+      - name: Opentofu Plan
         run: |
-          terraform plan \
+          tofu plan \
             -input=false \
             -lock=true \
             -out=plan.out
-
-      - name: Show Terraform Plan
-        if: always()
-        run: terraform show plan.out
