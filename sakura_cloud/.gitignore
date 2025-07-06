@@ -1,0 +1,5 @@
+male_server/.terraform/*
+male_server/.terraform.lock.hcl
+male_server/terraform.tfstate
+male_server/terraform.tfstate.backup
+male_server/test/*
