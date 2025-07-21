@@ -8,3 +8,4 @@ sakura_cloud/make_server/terraform.tfstate.backup
 
 
 dbt/postgres_linux/dbt/*
+dbt/postgres_linux/.env
